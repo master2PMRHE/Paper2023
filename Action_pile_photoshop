@@ -1,0 +1,27 @@
+// Définissez le nom de l'ensemble d'actions et le nom de l'action
+var actionSetName = "MonEnsemble";
+var actionName = "MaAction";
+
+// Sélectionne le premier calque
+var doc = app.activeDocument;
+var layers = doc.artLayers;
+var len = layers.length;
+layers[0].visible = true;
+
+// Boucle pour passer par chaque calque et exécuter l'action
+for (var i = 0; i < len; i++) {
+    doc.activeLayer = layers[i];
+    layers[i].visible = true;
+
+    try {
+        // Exécute l'action
+        app.doAction(actionName, actionSetName);
+    } catch (e) {
+        alert("Erreur lors de l'exécution de l'action.");
+    }
+
+    layers[i].visible = false;
+}
+
+// Rend le dernier calque visible
+layers[len - 1].visible = true;
