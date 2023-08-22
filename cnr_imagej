@@ -1,0 +1,43 @@
+// Assurez-vous que 18 ROIs sont sélectionnées
+if (roiManager("count") != 18) {
+    showMessage("Erreur", "18 ROIs doivent être sélectionnées (9 pour le signal et 9 pour le bruit).");
+    exit();
+}
+
+// Initialisation des variables
+signal_mean = 0;
+signal_stddev = 0;
+noise_mean = 0;
+noise_stddev = 0;
+
+// Mesurer la moyenne et l'écart-type pour les 9 ROIs du signal
+for (i = 0; i < 9; i++) {
+    roiManager("Select", i);
+    run("Measure");
+    signal_mean += getResult("Mean", 0);  // Utilisation de l'indice 0
+    signal_stddev += pow(getResult("StdDev", 0), 2); // Utilisation de l'indice 0 et pow pour le carré
+    run("Clear Results");  // Réinitialisation de la table des résultats
+}
+
+// Calcul de la moyenne et de l'écart-type pour le signal
+signal_mean /= 9;
+signal_stddev = sqrt(signal_stddev / 9);
+
+// Mesurer la moyenne et l'écart-type pour les 9 ROIs du bruit
+for (i = 9; i < 18; i++) {
+    roiManager("Select", i);
+    run("Measure");
+    noise_mean += getResult("Mean", 0);  // Utilisation de l'indice 0
+    noise_stddev += pow(getResult("StdDev", 0), 2); // Utilisation de l'indice 0 et pow pour le carré
+    run("Clear Results");  // Réinitialisation de la table des résultats
+}
+
+// Calcul de la moyenne et de l'écart-type pour le bruit
+noise_mean /= 9;
+noise_stddev = sqrt(noise_stddev / 9);
+
+// Calculer le CNR selon la formule de Patterson et Foster
+CNR = abs(signal_mean - noise_mean) / sqrt(signal_stddev^2 + noise_stddev^2);
+
+// Afficher le résultat
+showMessage("Résultat", "Le contraste sur bruit (CNR) selon Patterson et Foster est : " + CNR);
