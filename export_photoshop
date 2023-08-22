@@ -1,0 +1,38 @@
+// Définir le dossier de sortie
+var outputFolder = Folder.selectDialog("Sélectionnez le dossier où sauvegarder les fichiers TIFF");
+if (outputFolder == null) {
+  // L'utilisateur a annulé la sélection du dossier
+  alert("Opération annulée");
+  exit();
+}
+
+// Obtenir le document actuel
+var doc = app.activeDocument;
+
+// Parcourir chaque calque et l'exporter
+for (var i = 0; i < doc.layers.length; i++) {
+  var layer = doc.layers[i];
+
+  // Rendre seulement ce calque visible
+  hideAllLayers(doc);
+  layer.visible = true;
+
+  // Définir les options pour le fichier TIFF
+  var tiffOptions = new TiffSaveOptions();
+  tiffOptions.alphaChannels = true;
+  tiffOptions.layers = false;
+
+  // Nom du fichier de sortie
+  var fileName = layer.name + ".tif";
+
+  // Sauvegarder le calque en tant que fichier TIFF
+  var filePath = File(outputFolder + "/" + fileName);
+  doc.saveAs(filePath, tiffOptions, true);
+}
+
+// Fonction pour masquer tous les calques
+function hideAllLayers(doc) {
+  for (var i = 0; i < doc.layers.length; i++) {
+    doc.layers[i].visible = false;
+  }
+}
