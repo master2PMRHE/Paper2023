@@ -1,0 +1,31 @@
+// Clear previous results
+run("Clear Results");
+print("\\Clear");
+
+// Initialize variables for mean of foreground
+var mean_fg = 0;
+
+// Loop through each slice in the stack
+for (var n = 1; n <= nSlices; n++)  {
+    setSlice(n); // set the current slice to n
+    
+    // Assuming first 9 ROI are for signal
+    for (var roi = 1; roi <= 9; roi++) {
+        roiManager("Select", roi-1);  // Zero-indexed
+        run("Measure");
+        var mean = getResult("Mean", nResults-1);
+        
+        // First 9 ROI are for the signal
+        mean_fg += mean;
+    }
+}
+
+// Calculate the average mean for foreground
+mean_fg = mean_fg / 9;
+
+// Use a small constant as a stand-in for the background noise
+var noise_constant = 0.0001;
+
+// Calculate and print SNR
+var SNR = mean_fg / noise_constant;
+print("Signal-to-Noise Ratio (SNR) = " + SNR);
