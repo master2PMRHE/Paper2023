@@ -1,0 +1,33 @@
+// Clear previous results
+run("Clear Results");
+print("\\Clear");
+
+// Initialize total voxel count variable
+var totalVoxelCount = 0;
+
+// Loop through each slice in the stack
+for (var n = 1; n <= nSlices; n++)  {
+    setSlice(n); // set the current slice to n
+
+    // Get histogram for the current slice
+    getHistogram(values, counts, 256);
+
+    // Assuming segmented structure has pixel values > 0.
+    // Summing all non-zero pixel counts in this slice
+    var sliceVoxelCount = 0;
+    for (var i = 1; i < 256; i++) { // Start from 1 to skip zero (background)
+        sliceVoxelCount += counts[i];
+    }
+
+    // Add to total voxel count
+    totalVoxelCount += sliceVoxelCount;
+
+    // Print intermediate results
+    print("Slice " + n + ": Voxel Count = " + sliceVoxelCount);
+}
+
+// The total volume is directly the totalVoxelCount, since voxel dimensions are set in the image properties
+print("Total Voxel Count = " + totalVoxelCount);
+
+
+
