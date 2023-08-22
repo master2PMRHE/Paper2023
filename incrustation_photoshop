@@ -1,0 +1,49 @@
+// Sélectionne le premier document
+var doc1 = app.documents[0];
+// Sélectionne le deuxième document
+var doc2 = app.documents[1];
+
+// Assurez-vous que les deux documents ont le même nombre de calques
+if (doc1.artLayers.length == doc2.artLayers.length) {
+    // Parcourir chaque calque dans le premier document
+    for (var i = 0; i < doc1.artLayers.length; i++) {
+        // Sélectionne et active le calque i dans le doc2
+        app.activeDocument = doc2;
+        var layer2 = doc2.artLayers[i];
+        doc2.activeLayer = layer2;
+        
+        // Sélectionne tout le contenu du calque actif
+        doc2.selection.selectAll();
+        
+        // Tente de copier le contenu
+        try {
+            doc2.selection.copy();
+        } catch (e) {
+            alert("Impossible de copier le calque " + (i+1) + " dans le document 2.");
+            continue;
+        }
+
+        // Passe au doc1 et sélectionne le calque correspondant
+        app.activeDocument = doc1;
+        var layer1 = doc1.artLayers[i];
+        doc1.activeLayer = layer1;
+
+        // Colle le calque copié dans doc1
+        doc1.paste();
+        
+        // Désélectionne tout dans doc1
+        doc1.selection.deselect();
+
+        // Le nouveau calque devient le calque actif, on lui applique le mode de fusion "Incrustation"
+        doc1.activeLayer.blendMode = BlendMode.OVERLAY;
+
+        // Fusionne les deux calques
+        try {
+            doc1.activeLayer.merge();
+        } catch (e) {
+            alert("Erreur lors de la fusion des calques: " + e.toString());
+        }
+    }
+} else {
+    alert("Les deux documents doivent avoir le même nombre de calques.");
+}
